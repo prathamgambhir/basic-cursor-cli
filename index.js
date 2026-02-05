@@ -52,7 +52,7 @@ const writeFileDecleratioin = {
       content: {
         type: Type.STRING,
         description: "The content to write in the file.",
-      }
+      },
     },
     required: ["file_path", "content"],
   },
@@ -73,3 +73,61 @@ const makeFolderDecleratioin = {
   },
 };
 
+const History = [];
+
+const tools = [
+  {
+    functionDeclarations: [
+      readFileDecleratioin,
+      writeFileDecleratioin,
+      makeFolderDecleratioin,
+    ],
+  },
+];
+
+const toolNames = {
+    read_file: read_file,
+    write_file: write_file,
+    make_folder: make_folder
+}
+
+async function runAgent() {
+  while (true) {
+    const response = await ai.models.generateContent({
+      model: "",
+      contents: History,
+      config: {
+        systemInstruction: `
+            You 
+        `,
+        tools: { tools },
+      }
+    });
+
+    if(response.functionCalls?.length > 0){
+        for(const functionCall of response.functionCalls){
+            const {name , args} = functionCall;
+
+            console.log(`Name of function : ${name}`);
+            console.log(`Args of function : ${JSON.stringify(args)}`);
+
+            
+        }
+    }
+  }
+}
+
+while (true) {
+  const question = readlineSync.question("Ask me anything");
+
+  if (question === "exit") {
+    break;
+  }
+
+  History.push({
+    role: "user",
+    parts: [{text: question}]
+  })
+
+  await runAgent();
+}
