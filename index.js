@@ -64,12 +64,12 @@ const makeFolderDecleratioin = {
   parameters: {
     type: Type.OBJECT,
     properties: {
-      file_path: {
+      folder_path: {
         type: Type.STRING,
         description: "The location of the folder/directory to create.",
       },
     },
-    required: ["file_path"],
+    required: ["folder_path"],
   },
 };
 
@@ -94,7 +94,7 @@ const toolNames = {
 async function runAgent() {
   while (true) {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash",
+      model: "gemini-2.5-flash",
       contents: History,
       config: {
         systemInstruction: `
@@ -138,6 +138,7 @@ async function runAgent() {
             },
           ],
         });
+
         const toolResponse = await toolNames[name](args);
 
         History.push({
